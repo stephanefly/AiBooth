@@ -1,0 +1,18 @@
+Profil et contraintes (JSON condensé) :
+{{PROFILE}}
+
+Voici une liste de tâches avec leurs priorités :
+{{TASKS}}
+
+Donne-moi les 6 premieres tâches que Stéphane doit faire MAINTENANT.
+
+Critères stratégiques (issus de l’Excel GLOBAL) :
+{{CRITERIA}}
+
+Réponds OBLIGATOIREMENT sous forme JSON :
+{
+      "action": "...",
+      "raison": "...",
+      "impact": "...",
+      "categorie": "..."
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>MySelfieBooth – Priorités</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <header class="container">
+    <h1>MySelfieBooth – Tableau des tâches & Next Action</h1>
+  </header>
+
+<main class="container">
+
+<section class="card">
+  <h2>🔝 Plan d’action proposé par l’IA</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Raison</th>
+          <th>Impact</th>
+          <th>Catégorie</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in actions %}
+        <tr>
+          <td>{{ t.action | default("—") }}</td>
+          <td>{{ t.raison | default("—") }}</td>
+          <td>{{ t.impact | default("—") }}</td>
+          <td>{{ t.categorie | default("—") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+    <section class="card">
+      <h2>📋 Tâches (Notion)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tâche</th>
+              <th>Priorité</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for t in tasks %}
+            <tr>
+              <td>{{ t.title }}</td>
+              <td>
+                <span class="tag {{ t.prio|lower|replace(' ', '-') }}">
+                  {{ t.prio }}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footnote">
+    Généré par FastAPI • Notion • OpenAI
+  </footer>
+</body>
+</html>
