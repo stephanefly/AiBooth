@@ -13,31 +13,78 @@
 
 <main class="container">
 
-<section class="card">
-  <h2>🔝 Plan d’action proposé par l’IA</h2>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Action</th>
-          <th>Raison</th>
-          <th>Impact</th>
-          <th>Catégorie</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in actions %}
-        <tr>
-          <td>{{ t.action | default("—") }}</td>
-          <td>{{ t.raison | default("—") }}</td>
-          <td>{{ t.impact | default("—") }}</td>
-          <td>{{ t.categorie | default("—") }}</td>
-        </tr>
+  <section class="card">
+    <h2>🎯 Priorité immédiate</h2>
+    <div class="next-action">
+      <div class="na-title">{{ top.action | default("—") }}</div>
+      <div class="na-reason">{{ top.raison | default("En attente de recommandation…") }}</div>
+      <div class="na-meta">
+        <strong>Impact :</strong> {{ top.impact | default("—") }}
+        &nbsp;•&nbsp;
+        <strong>Catégorie :</strong> {{ top.categorie | default("—") }}
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🔝 Plan d’action proposé par l’IA</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Raison</th>
+            <th>Impact</th>
+            <th>Catégorie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in actions %}
+          <tr>
+            <td>{{ t.action | default("—") }}</td>
+            <td>{{ t.raison | default("—") }}</td>
+            <td>{{ t.impact | default("—") }}</td>
+            <td>{{ t.categorie | default("—") }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <section class="card">
+    <h2>📊 Objectifs stratégiques (Excel)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Domaine</th>
+            <th>Objectif</th>
+            <th>Priorité</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for obj in objectives %}
+          <tr>
+            <td>{{ obj.domaine }}</td>
+            <td>
+              <div class="objective-title">{{ obj.objectif }}</div>
+              {% if obj.resume %}
+              <div class="objective-sub">{{ obj.resume }}</div>
+              {% endif %}
+            </td>
+            <td>
+              <span class="tag {{ obj.priorite|lower|replace(' ', '-') }}">
+                {{ obj.priorite }}
+              </span>
+            </td>
+          </tr>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
 
     <section class="card">
@@ -48,6 +95,8 @@
             <tr>
               <th>Tâche</th>
               <th>Priorité</th>
+              <th>Échéance</th>
+              <th>Urgence</th>
             </tr>
           </thead>
           <tbody>
@@ -58,6 +107,28 @@
                 <span class="tag {{ t.prio|lower|replace(' ', '-') }}">
                   {{ t.prio }}
                 </span>
+              </td>
+              <td>
+                {% if t.due_date %}
+                  {{ t.due_date.split('T')[0] }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>
+                {% if t.days_remaining is not none %}
+                  {% if t.days_remaining < 0 %}
+                    <span class="urgency overdue">En retard de {{ t.days_remaining | abs }} j</span>
+                  {% elif t.days_remaining == 0 %}
+                    <span class="urgency due-today">Échéance aujourd'hui</span>
+                  {% elif t.days_remaining <= 3 %}
+                    <span class="urgency due-soon">{{ t.days_remaining }} j restants</span>
+                  {% else %}
+                    <span class="urgency">{{ t.days_remaining }} j</span>
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
               </td>
             </tr>
           {% endfor %}
