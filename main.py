@@ -40,19 +40,22 @@ async def ui_dashboard(request: Request, db: AsyncSession = Depends(get_db)):
     objectives_dict = [obj.dict() for obj in objectives]
 
     # 3) CRM → Events (async)
-    events = await fetch_min_events(db, limit=500)
-    crm_dict = [
-        {
-            "nom": e.get("nom"),
-            "date": e.get("date"),
-            "product": e.get("product"),
-            "status": e.get("status"),
-            "option": e.get("option"),
-            "sent": e.get("sent"),
-            "directory_name": e.get("directory_name"),
-        }
-        for e in events
-    ]
+    try:
+        events = await fetch_min_events(db, limit=500)
+        crm_dict = [
+            {
+                "nom": e.get("nom"),
+                "date": e.get("date"),
+                "product": e.get("product"),
+                "status": e.get("status"),
+                "option": e.get("option"),
+                "sent": e.get("sent"),
+                "directory_name": e.get("directory_name"),
+            }
+            for e in events
+        ]
+    except:
+        crm_dict = []
     print(crm_dict)
 
     # 4) Prompt
