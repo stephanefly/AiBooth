@@ -29,14 +29,6 @@ def home():
 def read_tasks():
     return fetch_tasks()
 
-@app.get("/next_action")
-def next_action():
-    tasks = fetch_tasks()
-
-    template = (BASE_DIR / "prompts" / "next_action.txt").read_text(encoding="utf-8")
-    # -> generate_next_action DOIT retourner un dict {"action": "...", "raison": "..."}
-    return generate_next_action(tasks_dict, template)
-
 
 @app.get("/ui", response_class=HTMLResponse)
 async def ui_dashboard(request: Request, db: AsyncSession = Depends(get_db)):
