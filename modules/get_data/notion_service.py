@@ -21,7 +21,7 @@ yesterday = (date.today() - timedelta(days=1)).isoformat()
 NOTION_TASK_FILTER = {
     "and": [
         {"property": "État", "status": {"does_not_equal": "Done"}},
-        {"property": "Échéance", "date": {"after": yesterday}}
+        {"property": "Domaine", "select": {"does_not_equal": "RESERVATION"}},
     ]
 }
 
@@ -32,45 +32,22 @@ data = notion.databases.query(
 )
 
 
-def _extract_due_date(properties: dict[str, dict]) -> Optional[str]:
-    candidate_keys = [
-        "Échéance",
-        "Echéance",
-        "Echeance",
-        "Deadline",
-        "Due Date",
-    ]
-
-    for key in candidate_keys:
-        prop = properties.get(key)
-        if not prop:
-            continue
-        date_payload = prop.get("date")
-        if date_payload and date_payload.get("start"):
-            return date_payload["start"]
-    return None
-
-
 def _days_until(date_str: str) -> Optional[int]:
     if not date_str:
         return None
 
-    try:
-        due = datetime.fromisoformat(date_str)
-    except ValueError:
-        try:
-            due = datetime.strptime(date_str.split("T")[0], "%Y-%m-%d")
-        except ValueError:
-            return None
+    due = datetime.fromisoformat(date_str).date()
 
-    today = datetime.utcnow().date()
-    return (due.date() - today).days
+    today = date.today()
+    return (due - today).days
+
 
 
 def fetch_tasks():
     tasks = []
 
     for row in data["results"]:
+
         title = row["properties"]["Nom"]["title"][0]["plain_text"]
 
         prio = (
@@ -79,16 +56,27 @@ def fetch_tasks():
             else "Moyenne"
         )
 
-        due_date = _extract_due_date(row["properties"])
+        domaine = (
+            row["properties"]["Domaine"]["select"]["name"]
+            if row["properties"]["Priorité"]["select"]
+            else ""
+        )
+
+        url = row["url"]
+
+        due_date = (
+            row["properties"]["Échéance"]["date"]
+            if row["properties"]["Échéance"]["date"]
+            else None)
         days_remaining = _days_until(due_date) if due_date else None
 
-        tasks.append(
-            Task(
-                title=title,
-                prio=prio,
-                due_date=due_date,
-                days_remaining=days_remaining,
-            )
-        )
+        tasks.append({
+            "title": title,
+            "prio": prio,
+            "domaine": domaine,
+            "due_date": due_date,
+            "days_remaining": days_remaining,
+            "url": url,
+        })
 
     return tasks

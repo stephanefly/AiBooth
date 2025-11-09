@@ -34,11 +34,11 @@ LEFT JOIN app_eventproduct ep    ON ep.id = e.event_product_id
 LEFT JOIN app_eventoption eo     ON eo.id = e.event_option_id
 LEFT JOIN app_eventpostprestation pp ON pp.id = e.event_post_presta_id
 LEFT JOIN app_eventtemplate et   ON et.id = e.event_template_id
-ORDER BY d.date_evenement ASC, c.nom ASC
+ORDER BY d.date_evenement DESC, c.nom DESC
 LIMIT :limit;
 """)
 
-async def fetch_min_events(db: AsyncSession, limit: int = 50):
+async def fetch_min_events(db: AsyncSession, limit: int = 500):
     rows = (await db.execute(SQL_EVENTS_MIN, {"limit": limit})).mappings().all()
     return [
         {

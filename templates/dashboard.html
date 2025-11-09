@@ -2,144 +2,186 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>MySelfieBooth – Priorités</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <title>MySelfieBooth – Top Actions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root{
+      --bg:#0b0c10; --panel:#111318; --text:#e9edf1; --muted:#a9b0b6; --border:#20242c;
+      /* Couleurs demandées */
+      --dom-reservation: #419a00;              /* Rouge clair */
+      --dom-attraction:#f4a261;               /* Orange */
+      --dom-conversion:#e63946;               /* Rouge */
+      --dom-preparation:#87ceeb;              /* Bleu ciel */
+      --dom-prestation:#1e90ff;               /* Bleu */
+      --dom-post:#b39ddb;                     /* Violet */
+      --dom-improve:#c3b091;                  /* Kaki */
+      --dom-strategy:#bdc3c7;                 /* Gris */
+      --dom-admin:#ffffff;                    /* Blanc (Compatibilité/ Administratif) */
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .container{max-width:1300px;margin:24px auto;padding:0 16px}
+    h1{font-size:28px;margin:0 0 10px}
+    h2{font-size:20px;margin:0 0 12px}
+
+    /* Cartes */
+    .card-compact,.fullwidth-card{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;
+      box-shadow:0 8px 25px rgba(0,0,0,.25);padding:14px;
+    }
+    .fullwidth-card{padding:18px;margin:20px 0;border-left:4px solid var(--dom-reservation)}
+
+    /* Grille 2 colonnes */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* Table – mots entiers */
+    table{width:100%;border-collapse:collapse;table-layout:auto}
+    th,td{
+      padding:10px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;
+      white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none;
+    }
+    th{color:var(--muted);font-weight:600;background:var(--panel)}
+    tr:hover td{background:rgba(255,255,255,.03)}
+
+    /* Tags */
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--border)}
+    .tag.critique{background:rgba(231,76,60,.15);border-color:rgba(231,76,60,.4);color:#e74c3c}
+    .tag.critique-opérationnel{background:rgba(231,76,60,.18);border-color:rgba(231,76,60,.45);color:#e74c3c}
+    .tag.haut{background:rgba(76,201,240,.15);border-color:rgba(76,201,240,.4);color:#4cc9f0}
+    .tag.moyen{background:rgba(243,156,18,.12);border-color:rgba(243,156,18,.35);color:#f39c12}
+    .tag.faible{background:rgba(169,176,182,.12);border-color:rgba(169,176,182,.35);color:#a9b0b6}
+
+    /* Priorité immédiate */
+    .next-action{display:grid;gap:6px;padding:12px;border:1px dashed var(--border);border-radius:12px;
+      background:linear-gradient(145deg,rgba(76,201,240,.08),rgba(255,255,255,.02))}
+    .na-title{font-size:18px;font-weight:700}
+    .na-reason{color:var(--muted)}
+    .na-meta{font-size:13px}
+
+    /* Titre domaine = même couleur que la bordure, sinon blanc */
+    .domain-title{margin:0 0 .6rem;font-size:1.05rem;font-weight:700;color:#ffffff}
+
+    .card-compact[data-domain="Attraction"]{border-left:4px solid var(--dom-attraction)}
+    .card-compact[data-domain="Attraction"] .domain-title{color:var(--dom-attraction)}
+
+    .card-compact[data-domain="Conversion"]{border-left:4px solid var(--dom-conversion)}
+    .card-compact[data-domain="Conversion"] .domain-title{color:var(--dom-conversion)}
+
+    .card-compact[data-domain="Préparation"]{border-left:4px solid var(--dom-preparation)}
+    .card-compact[data-domain="Préparation"] .domain-title{color:var(--dom-preparation)}
+
+    .card-compact[data-domain="Prestation"]{border-left:4px solid var(--dom-prestation)}
+    .card-compact[data-domain="Prestation"] .domain-title{color:var(--dom-prestation)}
+
+    .card-compact[data-domain="Post-Prestation"]{border-left:4px solid var(--dom-post)}
+    .card-compact[data-domain="Post-Prestation"] .domain-title{color:var(--dom-post)}
+
+    .card-compact[data-domain="Amélioration Continue"]{border-left:4px solid var(--dom-improve)}
+    .card-compact[data-domain="Amélioration Continue"] .domain-title{color:var(--dom-improve)}
+
+    .card-compact[data-domain="R&D"]{border-left:4px solid var(--dom-preparation)} /* même bleu ciel demandé */
+    .card-compact[data-domain="R&D"] .domain-title{color:var(--dom-preparation)}
+
+    .card-compact[data-domain="Compatibilité/ Administratif"],
+    .card-compact[data-domain="Administration + RH"]{border-left:4px solid var(--dom-admin)}
+    .card-compact[data-domain="Compatibilité/ Administratif"] .domain-title,
+    .card-compact[data-domain="Administration + RH"] .domain-title{color:var(--dom-admin)}
+
+    .card-compact[data-domain="Analyse stratégique"],
+    .card-compact[data-domain="Stratégie"]{border-left:4px solid var(--dom-strategy)}
+    .card-compact[data-domain="Analyse stratégique"] .domain-title,
+    .card-compact[data-domain="Stratégie"] .domain-title{color:var(--dom-strategy)}
+  </style>
 </head>
 <body>
   <header class="container">
-    <h1>MySelfieBooth – Tableau des tâches & Next Action</h1>
+    <h1>MySelfieBooth – Top Actions</h1>
   </header>
 
-<main class="container">
+  <main class="container">
 
-  <section class="card">
-    <h2>🎯 Priorité immédiate</h2>
-    <div class="next-action">
-      <div class="na-title">{{ top.action | default("—") }}</div>
-      <div class="na-reason">{{ top.raison | default("En attente de recommandation…") }}</div>
-      <div class="na-meta">
-        <strong>Impact :</strong> {{ top.impact | default("—") }}
-        &nbsp;•&nbsp;
-        <strong>Catégorie :</strong> {{ top.categorie | default("—") }}
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>🔝 Plan d’action proposé par l’IA</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>Raison</th>
-            <th>Impact</th>
-            <th>Catégorie</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for t in actions %}
-          <tr>
-            <td>{{ t.action | default("—") }}</td>
-            <td>{{ t.raison | default("—") }}</td>
-            <td>{{ t.impact | default("—") }}</td>
-            <td>{{ t.categorie | default("—") }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-
-  <section class="card">
-    <h2>📊 Objectifs stratégiques (Excel)</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Domaine</th>
-            <th>Objectif</th>
-            <th>Priorité</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for obj in objectives %}
-          <tr>
-            <td>{{ obj.domaine }}</td>
-            <td>
-              <div class="objective-title">{{ obj.objectif }}</div>
-              {% if obj.resume %}
-              <div class="objective-sub">{{ obj.resume }}</div>
-              {% endif %}
-            </td>
-            <td>
-              <span class="tag {{ obj.priorite|lower|replace(' ', '-') }}">
-                {{ obj.priorite }}
-              </span>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-
-    <section class="card">
-      <h2>📋 Tâches (Notion)</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Tâche</th>
-              <th>Priorité</th>
-              <th>Échéance</th>
-              <th>Urgence</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for t in tasks %}
-            <tr>
-              <td>{{ t.title }}</td>
-              <td>
-                <span class="tag {{ t.prio|lower|replace(' ', '-') }}">
-                  {{ t.prio }}
-                </span>
-              </td>
-              <td>
-                {% if t.due_date %}
-                  {{ t.due_date.split('T')[0] }}
-                {% else %}
-                  —
-                {% endif %}
-              </td>
-              <td>
-                {% if t.days_remaining is not none %}
-                  {% if t.days_remaining < 0 %}
-                    <span class="urgency overdue">En retard de {{ t.days_remaining | abs }} j</span>
-                  {% elif t.days_remaining == 0 %}
-                    <span class="urgency due-today">Échéance aujourd'hui</span>
-                  {% elif t.days_remaining <= 3 %}
-                    <span class="urgency due-soon">{{ t.days_remaining }} j restants</span>
-                  {% else %}
-                    <span class="urgency">{{ t.days_remaining }} j</span>
-                  {% endif %}
-                {% else %}
-                  —
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+    <!-- Priorité immédiate -->
+    <section class="card-compact">
+      <h2>🎯 Priorité immédiate</h2>
+      <div class="next-action">
+        <div class="na-title">{{ top.action | default("—") }}</div>
+        <div class="na-reason">{{ top.raison | default("En attente de recommandation…") }}</div>
+        <div class="na-meta">
+          <strong>Impact :</strong> {{ top.impact | default("—") }}
+          &nbsp;•&nbsp;
+          <strong>Catégorie :</strong> {{ top.categorie | default("—") }}
+        </div>
       </div>
     </section>
-  </main>
 
-  <footer class="container footnote">
-    Généré par FastAPI • Notion • OpenAI
-  </footer>
+    <!-- Reservation — Top 3 en pleine largeur -->
+    {% set res = top_by_domaine.get("Reservation", []) %}
+    <section class="fullwidth-card">
+      <h2>📌 Reservation — Top 3 priorités</h2>
+      <table>
+        <colgroup>
+          <col style="width:56px">
+          <col>
+          <col style="width:220px">
+          <col style="width:160px">
+        </colgroup>
+        <thead>
+          <tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr>
+        </thead>
+        <tbody>
+          {% for a in res[:3] %}
+          <tr>
+            <td><a href="{{ a.url }}" target="_blank">{{ loop.index }}</a></td>
+            <td>{{ a.action }}</td>
+            <td>{{ a.impact | default("—") }}</td>
+            <td><span class="tag {{ a.categorie|lower|replace(' ', '-') }}">{{ a.categorie | default("—") }}</span></td>
+          </tr>
+          {% endfor %}
+          {% for i in range( (3 - (res|length if res|length < 3 else 3)) ) %}
+          <tr>
+            <td>{{ (res|length) + loop.index }}</td>
+            <td>—</td><td>—</td><td><span class="tag faible">Faible</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Top 3 par domaine — 2 colonnes -->
+    <section>
+      <h2>🏷️ Top 3 par domaine</h2>
+      <div class="grid">
+        {% for domaine, lst in top_by_domaine.items() if domaine != "Reservation" %}
+        <div class="card-compact" data-domain="{{ domaine }}">
+          <h3 class="domain-title">{{ domaine }}</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              {% for a in lst %}
+              <tr>
+                <td><a href="{{ a.url }}" target="_blank">{{ loop.index }}</a></td>
+                <td>{{ a.action }}</td>
+                <td>{{ a.impact | default("—") }}</td>
+                <td><span class="tag {{ a.categorie|lower|replace(' ', '-') }}">{{ a.categorie | default("—") }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+  </main>
 </body>
 </html>

@@ -9,7 +9,7 @@ from models import Objective
 EXCEL_PATH = Path(__file__).resolve().parents[2] / "Objectifs_Strategiques_MySelfieBooth.xlsx"
 SHEET = "GLOBAL"
 
-PRIO_WEIGHTS = {"CRITIQUE": 3, "HAUT": 2, "MOYEN": 1, "FAIBLE": 0, "CRITIQUE OPE": 3}
+PRIO_WEIGHTS = {"CRITIQUE": 3, "HAUT": 2, "MOYEN": 1, "FAIBLE": 0, "CRITIQUE OPE": 4}
 
 
 @lru_cache

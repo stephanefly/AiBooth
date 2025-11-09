@@ -10,38 +10,66 @@
   --red: #e74c3c;
 }
 
+/* ====== BASE ====== */
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-
-.container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+.container { max-width: 1300px; margin: 24px auto; padding: 0 16px; }
 h1 { font-size: 28px; letter-spacing: .3px; }
 h2 { font-size: 20px; margin: 0 0 12px; }
 
-.card {
+/* ====== CARTES COMPACTES ====== */
+.card, .card-compact {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 18px;
   box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
+.card { padding: 18px; margin-bottom: 18px; }
+.card-compact { padding: 14px; }
 
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); text-align: left; }
-th { color: var(--muted); font-weight: 600; }
+/* ====== GRILLE RÉPONSIVE (moins de scroll) ====== */
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+@media (min-width: 1440px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ====== TABLE COMPACTE + HEADER COLLANT ====== */
+.table-wrap { overflow: hidden; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td { padding: 10px 8px; border-bottom: 1px solid var(--border); text-align: left; }
+th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--panel); z-index: 1; }
 tr:hover td { background: rgba(255,255,255,.03); }
+td:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* Action */
 
+/* ====== BADGES DE PRIORITÉ (robustes aux variantes) ====== */
 .tag {
   display: inline-block; padding: 6px 10px; border-radius: 999px;
   font-size: 12px; font-weight: 600; border: 1px solid var(--border);
 }
+
+/* Critique */
 .tag.critique { background: rgba(231,76,60,.15); border-color: rgba(231,76,60,.4); color: var(--red); }
-.tag.critique-ope { background: rgba(231,76,60,.18); border-color: rgba(231,76,60,.45); color: var(--red); }
-.tag.haute, .tag.haut { background: rgba(76,201,240,.15); border-color: rgba(76,201,240,.4); color: var(--accent); }
-.tag.moyenne, .tag.moyen { background: rgba(243,156,18,.12); border-color: rgba(243,156,18,.35); color: var(--orange); }
+/* Critique Opérationnel — accepter plusieurs formes de slug */
+.tag.critique-ope,
+.tag.critique-op,
+.tag.critique-operationnel,
+.tag.critique-opérationnel { background: rgba(231,76,60,.18); border-color: rgba(231,76,60,.45); color: var(--red); }
+
+/* Haut/Haute */
+.tag.haut, .tag.haute { background: rgba(76,201,240,.15); border-color: rgba(76,201,240,.4); color: var(--accent); }
+
+/* Moyen/Moyenne */
+.tag.moyen, .tag.moyenne { background: rgba(243,156,18,.12); border-color: rgba(243,156,18,.35); color: var(--orange); }
+
+/* Faible */
 .tag.faible { background: rgba(169,176,182,.12); border-color: rgba(169,176,182,.35); color: var(--muted); }
 
+/* ====== BLOC PRIORITÉ IMMÉDIATE ====== */
 .next-action {
   display: grid; gap: 6px; padding: 12px; border: 1px dashed var(--border); border-radius: 12px;
   background: linear-gradient(145deg, rgba(76,201,240,.08), rgba(255,255,255,.02));
@@ -49,10 +77,34 @@ tr:hover td { background: rgba(255,255,255,.03); }
 .na-title { font-size: 18px; font-weight: 700; }
 .na-reason { color: var(--muted); }
 .na-meta { font-size: 13px; color: var(--text); }
-.objective-title { font-weight: 600; }
-.objective-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-.urgency { font-weight: 600; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
-.urgency.due-soon { color: var(--orange); }
-.urgency.due-today { color: var(--accent); }
-.urgency.overdue { color: var(--red); }
-.footnote { color: var(--muted); font-size: 12px; text-align: center; margin-bottom: 28px; }
+
+/* ====== DOMAINES ====== */
+.domain-title {
+  margin: 0 0 0.6rem; padding-left: 0.2rem;
+  font-size: 1.05rem; font-weight: 700; color: #ffffff;
+  border-left: 4px solid #444;
+}
+
+.domain-domaine { color: #c0392b; }
+.domain-attraction { color: #e67e22; }
+.domain-conversion { color: #2980b9; }
+.domain-preparation { color: #27ae60; }
+.domain-prestation { color: #8e44ad; }
+.domain-post { color: #16a085; }
+.domain-improve { color: #7f8c8d; }
+.domain-rd { color: #d35400; }
+.domain-admin { color: #2c3e50; }
+.domain-strategy { color: #34495e; }
+
+/* ====== UTILITAIRES ====== */
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nowrap { white-space: nowrap; }
+
+.fullwidth-card {
+width: 100%;
+padding: 20px;
+border-radius: 12px;
+background: #fff;
+box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+margin-bottom: 22px;
+}

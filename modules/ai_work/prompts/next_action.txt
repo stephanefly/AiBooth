@@ -1,0 +1,115 @@
+
+Profil et contraintes (JSON condensé) :
+{{{{PROFILE}}}}
+
+Voici une liste de tâches avec leurs priorités et échéances (quand disponibles) :
+{{{{TASKS}}}}
+
+Donne-moi les 20 premières actions que Stéphane doit faire MAINTENANT.
+Chaque action doit être contextualisée avec les objectifs stratégiques suivants :
+{{{{CRITERIA}}}}
+
+⚠️ SORTIE OBLIGATOIRE (JSON strict, rien d’autre) :
+{{
+  "taches": [
+    {{
+      "action": "action concrète à réaliser en une phrase",
+      "impact": "impact attendu (financier, opérationnel, marketing…)",
+      "categorie": "Critique" | "Critique Opérationnel" | "Haut" | "Moyen" | "Faible",
+      "domaine": "même domaine que dans Notion ou 'Reservation'",
+      "url": "garder l'url"
+    }}
+  ]
+}}
+
+Contraintes supplémentaires :
+- Priorise strictement les actions à fort levier business (CA, marge, conversion, exécution client, satisfaction, réputation).
+- Exploite due_date et days_remaining : une action en retard ou imminente (≤3 jours) doit apparaître en premier.
+- Ne priorise pas les tâches de type RESERVATION si l'événement a lieu dans plus d’une semaine.
+- Le tableau "taches" doit contenir exactement 20 actions ordonnées de la plus urgente à la moins urgente.
+- N’ajoute aucun autre champ.
+- Si une tâche n’a pas d’URL, mets "".
+
+✅ RÈGLE CRM OBLIGATOIRE :
+- Au moins **5 actions** (sur les 20) doivent PROVENIR du CRM et avoir "domaine": "Reservation".
+- Si, après filtrage CRM, il y a moins de 5 événements éligibles :
+  → tu DOIS créer des actions AGRÉGÉES basées sur les statuts CRM (Post Presta, Sent Media, Acompte OK, Initied, relances commerciales, préparation prestation, etc.).
+  → ces actions doivent être immédiatement actionnables et mesurables (ex: “traiter les 4 Post Presta”, “envoyer les médias restants”, “produire et envoyer N devis”, “préparer les dossiers Acompte OK ≤7j”, “relances Last Chance”, etc.).
+
+Les tâches CRM suivantes proviennent du système MySelfieBooth :
+{crm_events}
+
+Ta mission CRM (avec détection automatique des problèmes) :
+
+1) Filtrer les événements CRM pour ne garder que ceux réellement prioritaires et “bientôt à traiter”.
+
+RÈGLES DE DÉCISION (CRM) :
+- STATUTS PRIORITAIRES (post-signature, toujours en haut) :
+  - Initied : Devis à faire
+  - Acompte OK
+  - Post Presta
+  - Sent Media
+
+- STATUTS COMMERCIAUX (ordre croissant d’urgence) :
+  1. Initied
+  2. Sended
+  3. First Rappel
+  4. Last Rappel
+  5. Prolongation
+  6. Last Chance
+  7. Phonebooth Offert
+  Inclure UNIQUEMENT ceux :
+  - datés de moins d’une semaine, OU
+  - appartenant aux trois derniers niveaux : Last Rappel, Prolongation, Last Chance
+
+- STATUTS À IGNORER :
+  - Mail Refused
+  - Refused
+  - Presta FINI
+
+- RÈGLES GÉNÉRALES :
+  - Les statuts post-signature sont TOUJOURS prioritaires.
+  - Les événements > 7 jours sont exclus sauf : Last Rappel / Prolongation / Last Chance.
+  - Post Presta et Sent Media sont des urgences opérationnelles critiques.
+
+2) Diagnostic & agrégation (interne, sans l’imprimer) :
+- Calcule :
+  - nb de Post Presta,
+  - nb de Sent Media,
+  - nb d'Acompte OK,
+  - nb de devis Initied,
+  - nb de relances urgentes (Last Rappel / Prolongation / Last Chance).
+- Détecte les goulets d’étranglement :
+  - backlog Post Presta,
+  - médias non envoyés,
+  - devis non produits,
+  - relances critiques,
+  - préparations prestation urgentes.
+- Identifie les événements CRM avec date ≤7 jours ou en retard.
+
+3) Génère des NOUVELLES actions pour le CRM :
+- Actions groupées immédiates :
+  - “Vider les N Post Presta aujourd’hui”
+  - “Finaliser tous les Sent Media non envoyés”
+  - “Faire les devis Initied”
+  - “Préparer les dossiers Acompte OK ≤7 jours”
+  - “Effectuer les relances critiques (Last Rappel / Prolongation / Last Chance)”
+- Chaque action doit être claire, mesurable et orientée résultat.
+- Toutes ces actions doivent être dans le domaine "Reservation".
+
+TRI FINAL (après mélange TASKS + CRM filtré + actions CRM agrégées) :
+1. Urgences post-signature (Post Presta, Sent Media, Acompte OK, Initied) en retard ou ≤3 jours.
+2. Urgences commerciales critiques (Last Rappel / Prolongation / Last Chance).
+3. Actions à fort levier business (selon CRITERIA).
+4. Actions utiles mais moins critiques.
+
+FORMAT DES ÉLÉMENTS :
+- "action" : une seule phrase, immédiatement actionnable.
+- "impact" : financier / opérationnel / marketing / satisfaction client / réputation.
+- "categorie" : Critique, Critique Opérationnel, Haut, Moyen, Faible.
+- "domaine" : domaine Notion ou "Reservation" si issu du CRM.
+- "url" : garder l’URL ou "".
+
+RENVOIE UNIQUEMENT le JSON demandé,
+avec **exactement 20 actions**, dont **au moins 5 actions CRM (domaine "Reservation")**.
+

@@ -18,68 +18,48 @@ OPENAI_MODEL = "gpt-4o-mini"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+def _sanitize_response(payload: str):
+    # On récupère le bloc JSON exactement comme une chaîne
+    start = payload.find("{")
+    end = payload.rfind("}") + 1
+    bloc = payload[start:end]
 
-def _sanitize_response(payload: str) -> dict[str, Any]:
-    """Transforme la réponse brute du modèle en dictionnaire Python."""
+    # Conversion en JSON (si ça plante → crash volontaire)
+    data = json.loads(bloc)
 
-    try:
-        data = json.loads(payload)
-    except json.JSONDecodeError:
-        # Tentative de récupération du premier bloc JSON valide.
-        start = payload.find("{")
-        end = payload.rfind("}") + 1
-        if start == -1 or end <= start:
-            raise
-        data = json.loads(payload[start:end])
+    # Uniformisation manuelle
+    data["taches"] = data.get("taches") or data.get("actions")
 
-    if not isinstance(data, dict):
-        # Le modèle doit renvoyer un objet JSON. Tout autre type est rejeté.
-        return {"taches": []}
+    # On limite à 20 éléments
+    raw = data["taches"][:20]
 
-    # Harmonise les différentes clés possibles renvoyées par le modèle.
-    if "actions" in data and "taches" not in data:
-        data["taches"] = data.pop("actions")
+    # Nettoyage minimal, aucune condition
+    cleaned = []
+    for t in raw:
+        cleaned.append({
+            "action": str(t.get("action", "")).strip(),
+            "raison": str(t.get("raison", "")).strip(),
+            "impact": str(t.get("impact", "")).strip(),
+            "categorie": str(t.get("categorie", "")).strip(),
+            "domaine": str(t.get("domaine", "")).strip(),
+            "color_domaine": str(t.get("color_domaine", "")).strip(),
+            "url": str(t.get("url", "")).strip(),
+        })
 
-    def _clean_field(value: Any) -> str:
-        if value is None:
-            return ""
-        if not isinstance(value, str):
-            value = str(value)
-        return value.strip()
-
-    taches = []
-    for item in data.get("taches", [])[:6]:
-        if not isinstance(item, dict):
-            continue
-        cleaned = {
-            "action": _clean_field(item.get("action", "")),
-            "raison": _clean_field(item.get("raison", "")),
-            "impact": _clean_field(item.get("impact", "")),
-            "categorie": _clean_field(item.get("categorie", "")),
-        }
-
-        if not any(cleaned.values()):
-            # Ignore les entrées totalement vides pour ne pas polluer l'UI.
-            continue
-
-        taches.append(cleaned)
-
-    data["taches"] = taches
-    return data
+    return {"taches": cleaned}
 
 
-def generate_next_action(tasks: list[dict], prompt_template: str) -> dict[str, Any]:
+
+def generate_next_action(tasks: list[dict], crm_dict, prompt_template: str) -> dict[str, Any]:
     criteria_block = criteria_to_prompt_block()
     profile_block = profile_to_prompt_block()
 
-    tasks_payload = json.dumps(tasks, ensure_ascii=False, indent=2)
+    prompt = prompt_template
+    prompt = prompt.replace("{{TASKS}}", json.dumps(tasks, ensure_ascii=False))
+    prompt = prompt.replace("{{CRM_EVENTS}}", json.dumps(crm_dict, ensure_ascii=False))
+    prompt = prompt.replace("{{PROFILE}}", json.dumps(profile_block or {}, ensure_ascii=False))
+    prompt = prompt.replace("{{CRITERIA}}", json.dumps(criteria_block or [], ensure_ascii=False))
 
-    prompt = (
-        prompt_template
-        .replace("{{TASKS}}", tasks_payload)
-        .replace("{{CRITERIA}}", criteria_block)
-        .replace("{{PROFILE}}", profile_block)
-    )
 
     resp = client.chat.completions.create(
         model=OPENAI_MODEL,
@@ -92,4 +72,5 @@ def generate_next_action(tasks: list[dict], prompt_template: str) -> dict[str, A
     )
 
     raw_content = resp.choices[0].message.content
+    print(raw_content)
     return _sanitize_response(raw_content)
