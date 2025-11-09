@@ -29,7 +29,6 @@ def home():
 def read_tasks():
     return fetch_tasks()
 
-
 @app.get("/ui", response_class=HTMLResponse)
 async def ui_dashboard(request: Request, db: AsyncSession = Depends(get_db)):
     # 1) Notion → Tasks
