@@ -5,13 +5,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import JSONResponse
 
 from modules.get_data.event_queries import fetch_min_events
 from modules.get_data.db_crm import get_db
 from modules.get_data.notion_service import fetch_tasks
 from modules.get_data.objectifs import objectives_with_priority
 from modules.ai_work.ai_service import generate_next_action
-from modules.whatsapp.send_html import create_html, build_dashboard_context
+from modules.whatsapp.send_html import create_html, build_dashboard_context, send_whatsapp_text
 
 app = FastAPI()
 
@@ -120,3 +121,10 @@ async def dashboard(request: Request):
         html_content = f.read()
 
     return HTMLResponse(content=html_content)
+
+
+@app.get("/whatsapp/send-text")
+async def whatsapp_send_text():
+    dashboard = "http://localhost:8000/dashboard"
+    data = send_whatsapp_text(dashboard)
+    return JSONResponse({"api_response": data})

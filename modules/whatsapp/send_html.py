@@ -2,10 +2,12 @@ import os
 import json
 import base64
 from pathlib import Path
-
+import requests
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi.templating import Jinja2Templates
+import json
+import http.client
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -15,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent  # dossier du fichier actuel
 # Charge .env
 load_dotenv()
 DESTINATION = os.getenv("DESTINATION")
-ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 
 
@@ -53,16 +55,51 @@ def build_dashboard_context(
 def create_html(ctx):
     """
     Rend le template `dashboard.html` avec le contexte `ctx`
-    et l'exporte dans un fichier HTML.
+    et l'exporte dans un fichier HTML dans:
+    modules/whatsapp/dashboard/dashboard_today.html
+    sans aucun chemin en dur.
     """
 
+    # 1) Rendu du template
     html_content = templates.get_template("dashboard.html").render(ctx)
 
-    # Exemple de chemin : modules/whatsapp/dashboard/dashboard_today.html
-    export_dir = BASE_DIR / "dashboard"
+    # 2) Dossier dynamique : modules/whatsapp/dashboard/
+    export_dir = BASE_DIR / "modules" / "whatsapp" / "dashboard"
     export_dir.mkdir(parents=True, exist_ok=True)
 
+    # 3) Fichier final
     export_path = export_dir / "dashboard_today.html"
     export_path.write_text(html_content, encoding="utf-8")
 
     return export_path
+
+
+
+def send_whatsapp_text(dashboard):
+    conn = http.client.HTTPSConnection("graph.facebook.com")
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": f"+{DESTINATION}",
+        "type": "text",
+        "text": {"body": "http://notion.myselfiebooth-paris.fr/dashboard" }
+    }
+
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    conn.request(
+        "POST",
+        f"/v20.0/{PHONE_NUMBER_ID}/messages",
+        body=json.dumps(payload),
+        headers=headers
+    )
+
+    res = conn.getresponse()
+    data = res.read().decode("utf-8")
+    print(res.status, res.reason)
+    print(data)
+    return data
+
