@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 from datetime import date, timedelta
 
 from notion_client import Client as Notion
@@ -10,14 +10,13 @@ import os
 # Charge .env
 load_dotenv()
 
-
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 DATABASE_ID = os.getenv("DATABASE_ID")
 
 notion = Notion(auth=NOTION_TOKEN)
 
-
 yesterday = (date.today() - timedelta(days=1)).isoformat()
+
 NOTION_TASK_FILTER = {
     "and": [
         {"property": "État", "status": {"does_not_equal": "Done"}},
@@ -32,43 +31,60 @@ data = notion.databases.query(
 )
 
 
-def _days_until(date_str: str) -> Optional[int]:
-    if not date_str:
+def _days_until(date_value: Any) -> Optional[int]:
+    """
+    Prend soit :
+    - une string ISO ("2025-11-15" ou "2025-11-15T10:00:00.000Z")
+    - un dict Notion {"start": "...", "end": ...}
+    - ou autre -> renvoie None
+    """
+    if not date_value:
         return None
 
-    due = datetime.fromisoformat(date_str).date()
+    # Cas dict Notion {"start": "2025-11-15", "end": None}
+    if isinstance(date_value, dict):
+        date_value = date_value.get("start")
+
+    # On veut absolument une string ici
+    if not isinstance(date_value, str):
+        return None
+
+    # On coupe au cas où il y a l'heure dedans
+    date_str = date_value.split("T")[0]
+
+    try:
+        due = datetime.fromisoformat(date_str).date()
+    except ValueError:
+        return None
 
     today = date.today()
     return (due - today).days
-
 
 
 def fetch_tasks():
     tasks = []
 
     for row in data["results"]:
+        # Titre : on sécurise s'il n'y a pas de bloc
+        title_prop = row["properties"]["Nom"]["title"]
+        title = title_prop[0]["plain_text"] if title_prop else "(Sans titre)"
 
-        title = row["properties"]["Nom"]["title"][0]["plain_text"]
+        # Priorité
+        prio_prop = row["properties"]["Priorité"]["select"]
+        prio = prio_prop["name"] if prio_prop else "Moyenne"
 
-        prio = (
-            row["properties"]["Priorité"]["select"]["name"]
-            if row["properties"]["Priorité"]["select"]
-            else "Moyenne"
-        )
-
-        domaine = (
-            row["properties"]["Domaine"]["select"]["name"]
-            if row["properties"]["Priorité"]["select"]
-            else ""
-        )
+        # Domaine (tu avais une petite erreur ici : tu re-testais Priorité)
+        domaine_prop = row["properties"]["Domaine"]["select"]
+        domaine = domaine_prop["name"] if domaine_prop else ""
 
         url = row["url"]
 
-        due_date = (
-            row["properties"]["Échéance"]["date"]
-            if row["properties"]["Échéance"]["date"]
-            else None)
-        days_remaining = _days_until(due_date) if due_date else None
+        # Échéance Notion : c'est un dict {"start": "...", "end": "..."} ou None
+        echeance_prop = row["properties"]["Échéance"]["date"]
+        # due_date stockée comme string simple (ou None)
+        due_date = echeance_prop["start"] if echeance_prop else None
+
+        days_remaining = _days_until(echeance_prop) if echeance_prop else None
 
         tasks.append({
             "title": title,

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>MySelfieBooth – Top Actions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root{
+      --bg:#0b0c10; --panel:#111318; --text:#e9edf1; --muted:#a9b0b6; --border:#20242c;
+      /* Couleurs demandées */
+      --dom-reservation: #419a00;              /* Rouge clair */
+      --dom-attraction:#f4a261;               /* Orange */
+      --dom-conversion:#e63946;               /* Rouge */
+      --dom-preparation:#87ceeb;              /* Bleu ciel */
+      --dom-prestation:#1e90ff;               /* Bleu */
+      --dom-post:#b39ddb;                     /* Violet */
+      --dom-improve:#c3b091;                  /* Kaki */
+      --dom-strategy:#bdc3c7;                 /* Gris */
+      --dom-admin:#ffffff;                    /* Blanc (Compatibilité/ Administratif) */
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .container{max-width:1300px;margin:24px auto;padding:0 16px}
+    h1{font-size:28px;margin:0 0 10px}
+    h2{font-size:20px;margin:0 0 12px}
+
+    /* Cartes */
+    .card-compact,.fullwidth-card{
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;
+      box-shadow:0 8px 25px rgba(0,0,0,.25);padding:14px;
+    }
+    .fullwidth-card{padding:18px;margin:20px 0;border-left:4px solid var(--dom-reservation)}
+
+    /* Grille 2 colonnes */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* Table – mots entiers */
+    table{width:100%;border-collapse:collapse;table-layout:auto}
+    th,td{
+      padding:10px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;
+      white-space:normal;word-break:normal;overflow-wrap:break-word;hyphens:none;
+    }
+    th{color:var(--muted);font-weight:600;background:var(--panel)}
+    tr:hover td{background:rgba(255,255,255,.03)}
+
+    /* Tags */
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--border)}
+    .tag.critique{background:rgba(231,76,60,.15);border-color:rgba(231,76,60,.4);color:#e74c3c}
+    .tag.critique-opérationnel{background:rgba(231,76,60,.18);border-color:rgba(231,76,60,.45);color:#e74c3c}
+    .tag.haut{background:rgba(76,201,240,.15);border-color:rgba(76,201,240,.4);color:#4cc9f0}
+    .tag.moyen{background:rgba(243,156,18,.12);border-color:rgba(243,156,18,.35);color:#f39c12}
+    .tag.faible{background:rgba(169,176,182,.12);border-color:rgba(169,176,182,.35);color:#a9b0b6}
+
+    /* Priorité immédiate */
+    .next-action{display:grid;gap:6px;padding:12px;border:1px dashed var(--border);border-radius:12px;
+      background:linear-gradient(145deg,rgba(76,201,240,.08),rgba(255,255,255,.02))}
+    .na-title{font-size:18px;font-weight:700}
+    .na-reason{color:var(--muted)}
+    .na-meta{font-size:13px}
+
+    /* Titre domaine = même couleur que la bordure, sinon blanc */
+    .domain-title{margin:0 0 .6rem;font-size:1.05rem;font-weight:700;color:#ffffff}
+
+    .card-compact[data-domain="Attraction"]{border-left:4px solid var(--dom-attraction)}
+    .card-compact[data-domain="Attraction"] .domain-title{color:var(--dom-attraction)}
+
+    .card-compact[data-domain="Conversion"]{border-left:4px solid var(--dom-conversion)}
+    .card-compact[data-domain="Conversion"] .domain-title{color:var(--dom-conversion)}
+
+    .card-compact[data-domain="Préparation"]{border-left:4px solid var(--dom-preparation)}
+    .card-compact[data-domain="Préparation"] .domain-title{color:var(--dom-preparation)}
+
+    .card-compact[data-domain="Prestation"]{border-left:4px solid var(--dom-prestation)}
+    .card-compact[data-domain="Prestation"] .domain-title{color:var(--dom-prestation)}
+
+    .card-compact[data-domain="Post-Prestation"]{border-left:4px solid var(--dom-post)}
+    .card-compact[data-domain="Post-Prestation"] .domain-title{color:var(--dom-post)}
+
+    .card-compact[data-domain="Amélioration Continue"]{border-left:4px solid var(--dom-improve)}
+    .card-compact[data-domain="Amélioration Continue"] .domain-title{color:var(--dom-improve)}
+
+    .card-compact[data-domain="R&D"]{border-left:4px solid var(--dom-preparation)} /* même bleu ciel demandé */
+    .card-compact[data-domain="R&D"] .domain-title{color:var(--dom-preparation)}
+
+    .card-compact[data-domain="Compatibilité/ Administratif"],
+    .card-compact[data-domain="Administration + RH"]{border-left:4px solid var(--dom-admin)}
+    .card-compact[data-domain="Compatibilité/ Administratif"] .domain-title,
+    .card-compact[data-domain="Administration + RH"] .domain-title{color:var(--dom-admin)}
+
+    .card-compact[data-domain="Analyse stratégique"],
+    .card-compact[data-domain="Stratégie"]{border-left:4px solid var(--dom-strategy)}
+    .card-compact[data-domain="Analyse stratégique"] .domain-title,
+    .card-compact[data-domain="Stratégie"] .domain-title{color:var(--dom-strategy)}
+  </style>
+</head>
+<body>
+  <header class="container">
+    <h1>MySelfieBooth – Top Actions</h1>
+  </header>
+
+  <main class="container">
+
+    <!-- Priorité immédiate -->
+    <section class="card-compact">
+      <h2>🎯 Priorité immédiate</h2>
+      <div class="next-action">
+        <div class="na-title">Vider les 2 Post Presta aujourd&#39;hui.</div>
+        <div class="na-reason"></div>
+        <div class="na-meta">
+          <strong>Impact :</strong> opérationnel
+          &nbsp;•&nbsp;
+          <strong>Catégorie :</strong> Critique
+        </div>
+      </div>
+    </section>
+
+    <!-- Reservation — Top 3 en pleine largeur -->
+    
+    <section class="fullwidth-card">
+      <h2>📌 <a style="color:#639563"> Reservation </a></h2>
+      <table>
+        <colgroup>
+          <col style="width:56px">
+          <col>
+          <col style="width:220px">
+          <col style="width:160px">
+        </colgroup>
+        <thead>
+          <tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td><a href="https://www.notion.so/CD-PROJEKT-S.A." target="_blank">1</a></td>
+            <td>Vider les 2 Post Presta aujourd&#39;hui.</td>
+            <td>opérationnel</td>
+            <td><span class="tag critique">Critique</span></td>
+          </tr>
+          
+          <tr>
+            <td><a href="https://www.notion.so/DINESH-RECEPTION" target="_blank">2</a></td>
+            <td>Finaliser tous les Sent Media non envoyés.</td>
+            <td>satisfaction client</td>
+            <td><span class="tag critique">Critique</span></td>
+          </tr>
+          
+          <tr>
+            <td><a href="" target="_blank">3</a></td>
+            <td>Préparer les dossiers Acompte OK ≤7 jours.</td>
+            <td>financier</td>
+            <td><span class="tag critique">Critique</span></td>
+          </tr>
+          
+          
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Top 3 par domaine — 2 colonnes -->
+    <section>
+      <h2>🏷️ Top 3 par domaine</h2>
+      <div class="grid">
+        
+        <div class="card-compact" data-domain="Compatibilité/ Administratif">
+          <h3 class="domain-title">Compatibilité/ Administratif</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Relancer-le-paiement-pour-la-prestation-du-14-06-2025-2a3481b9179581188e39d119f6f383d9" target="_blank">1</a></td>
+                <td>Relancer le paiement pour la prestation du 14/06/2025.</td>
+                <td>financier</td>
+                <td><span class="tag critique">Critique</span></td>
+              </tr>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Mettre-jour-l-assurance-voiture-pour-l-v-nement-de-novembre-240481b9179580c19952c6378d0e2dda" target="_blank">2</a></td>
+                <td>Mettre à jour l&#39;assurance voiture pour l&#39;événement de novembre.</td>
+                <td>opérationnel</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="Préparation">
+          <h3 class="domain-title">Préparation</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/R-diger-les-r-gles-pour-les-animateurs-d-v-nements-22f481b91795809fb3aae1f0234ff6d3" target="_blank">1</a></td>
+                <td>Rédiger les règles pour les animateurs d&#39;événements.</td>
+                <td>opérationnel</td>
+                <td><span class="tag critique">Critique</span></td>
+              </tr>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Faire-un-checklist-des-consomable-avant-evenement-19f481b917958084a31ccf9a4399ba22" target="_blank">2</a></td>
+                <td>Faire un checklist des consommables avant événement.</td>
+                <td>opérationnel</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="Conversion">
+          <h3 class="domain-title">Conversion</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Cr-er-une-communication-sur-WhatsApp-pour-l-quipe-v-nementielle-28f481b91795804e8d24e6f4a02c68cc" target="_blank">1</a></td>
+                <td>Créer une communication sur WhatsApp pour l&#39;équipe événementielle.</td>
+                <td>opérationnel</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Analyser-le-taux-de-rentabilit-des-v-nements-pass-s-151481b91795809cafffc352f4e0d182" target="_blank">2</a></td>
+                <td>Analyser le taux de rentabilité des événements passés.</td>
+                <td>financier</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="PERSO">
+          <h3 class="domain-title">PERSO</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Commander-pneus-chez-Norauto-pour-contr-le-technique-22c481b9179580f78d10fdd7fa4991e8" target="_blank">1</a></td>
+                <td>Commander pneus chez Norauto pour contrôle technique.</td>
+                <td>opérationnel</td>
+                <td><span class="tag critique">Critique</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="Post-Prestation">
+          <h3 class="domain-title">Post-Prestation</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Envoyer-retour-sur-l-Espace-Client-aux-utilisateurs-218481b9179580f29f06d177c15c91f1" target="_blank">1</a></td>
+                <td>Envoyer retour sur l&#39;Espace Client aux utilisateurs.</td>
+                <td>satisfaction client</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="Attraction">
+          <h3 class="domain-title">Attraction</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Mettre-jour-l-annonce-sur-Leboncoin-3564232de936446ead2b3ecd69968571" target="_blank">1</a></td>
+                <td>Mettre à jour l&#39;annonce sur Leboncoin.</td>
+                <td>marketing</td>
+                <td><span class="tag critique">Critique</span></td>
+              </tr>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Envoyer-message-au-planneur-de-mariage-04934665a95c43f095cc926166ff2d2d" target="_blank">2</a></td>
+                <td>Envoyer message au planneur de mariage.</td>
+                <td>commercial</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Cr-er-vid-o-promotionnelle-pour-l-v-nement-2025-29a481b9179580ee8adbf603882341b2" target="_blank">3</a></td>
+                <td>Créer vidéo promotionnelle pour l&#39;événement 2025.</td>
+                <td>marketing</td>
+                <td><span class="tag critique-opérationnel">Critique Opérationnel</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="card-compact" data-domain="Stratégie">
+          <h3 class="domain-title">Stratégie</h3>
+          <table>
+            <colgroup>
+              <col style="width:48px">
+              <col>
+              <col style="width:200px">
+              <col style="width:160px">
+            </colgroup>
+            <thead><tr><th>#</th><th>Action</th><th>Impact</th><th>Catégorie</th></tr></thead>
+            <tbody>
+              
+              <tr>
+                <td><a href="https://www.notion.so/Analyser-le-positionnement-des-concurrents-dans-l-v-nementiel-033bfeffe09f43918961e2ffbc201fc5" target="_blank">1</a></td>
+                <td>Analyser le positionnement des concurrents dans l&#39;événementiel.</td>
+                <td>stratégique</td>
+                <td><span class="tag moyen">Moyen</span></td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        
+      </div>
+    </section>
+
+      <section>
+  <h2>Message à envoyer</h2>
+  <p rows="5" style="width:100%;">Voici les priorités immédiates : 1) Vider les Post Presta aujourd&#39;hui, 2) Finaliser les Sent Media non envoyés, 3) Préparer les dossiers Acompte OK ≤7 jours. Merci de vous concentrer sur ces actions critiques.</p>
+</section>
+
+  </main>
+</body>
+</html>

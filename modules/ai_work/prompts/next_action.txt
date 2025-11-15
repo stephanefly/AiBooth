@@ -1,4 +1,3 @@
-
 Profil et contraintes (JSON condensé) :
 {{{{PROFILE}}}}
 
@@ -19,7 +18,8 @@ Chaque action doit être contextualisée avec les objectifs stratégiques suivan
       "domaine": "même domaine que dans Notion ou 'Reservation'",
       "url": "garder l'url"
     }}
-  ]
+  ],
+  "message": "Texte court prêt à être envoyé tel quel à un client ou à un membre de l'équipe (WhatsApp ou email), expliquant les 1 à 3 priorités immédiates de façon claire et professionnelle."
 }}
 
 Contraintes supplémentaires :
@@ -27,8 +27,9 @@ Contraintes supplémentaires :
 - Exploite due_date et days_remaining : une action en retard ou imminente (≤3 jours) doit apparaître en premier.
 - Ne priorise pas les tâches de type RESERVATION si l'événement a lieu dans plus d’une semaine.
 - Le tableau "taches" doit contenir exactement 20 actions ordonnées de la plus urgente à la moins urgente.
-- N’ajoute aucun autre champ.
+- Le JSON doit contenir UNIQUEMENT les clés "taches" et "message".
 - Si une tâche n’a pas d’URL, mets "".
+- Le champ "message" doit être une phrase ou un petit paragraphe, prêt à être copié-collé dans WhatsApp ou un email, sans balises, sans mise en forme spéciale.
 
 ✅ RÈGLE CRM OBLIGATOIRE :
 - Au moins **5 actions** (sur les 20) doivent PROVENIR du CRM et avoir "domaine": "Reservation".
@@ -37,7 +38,7 @@ Contraintes supplémentaires :
   → ces actions doivent être immédiatement actionnables et mesurables (ex: “traiter les 4 Post Presta”, “envoyer les médias restants”, “produire et envoyer N devis”, “préparer les dossiers Acompte OK ≤7j”, “relances Last Chance”, etc.).
 
 Les tâches CRM suivantes proviennent du système MySelfieBooth :
-{crm_events}
+{{{{CRM_EVENTS}}}}
 
 Ta mission CRM (avec détection automatique des problèmes) :
 
@@ -111,5 +112,5 @@ FORMAT DES ÉLÉMENTS :
 - "url" : garder l’URL ou "".
 
 RENVOIE UNIQUEMENT le JSON demandé,
-avec **exactement 20 actions**, dont **au moins 5 actions CRM (domaine "Reservation")**.
-
+avec **exactement 20 actions**, dont **au moins 5 actions CRM (domaine "Reservation")**,
+et un champ "message" prêt à être copié-collé dans WhatsApp ou un email.
