@@ -21,7 +21,6 @@ BASE_DIR = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
-
 @app.get("/")
 def home():
     return {"message": "OK"}
@@ -115,9 +114,15 @@ async def ui_dashboard(request: Request, db: AsyncSession = Depends(get_db)):
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    path = r"C:\Users\FAURE-Stephane\PycharmProjects\AiBooth\modules\whatsapp\dashboard\dashboard_today.html"
+    dashboard_path = (
+        BASE_DIR
+        / "modules"
+        / "whatsapp"
+        / "dashboard"
+        / "dashboard_today.html"
+    )
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(dashboard_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
     return HTMLResponse(content=html_content)
@@ -125,6 +130,6 @@ async def dashboard(request: Request):
 
 @app.get("/whatsapp/send-text")
 async def whatsapp_send_text():
-    dashboard = "http://localhost:8000/dashboard"
-    data = send_whatsapp_text(dashboard)
+
+    data = send_whatsapp_text()
     return JSONResponse({"api_response": data})

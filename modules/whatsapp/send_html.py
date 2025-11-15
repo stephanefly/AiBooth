@@ -75,8 +75,10 @@ def create_html(ctx):
 
 
 
-def send_whatsapp_text(dashboard):
+def send_whatsapp_text():
     conn = http.client.HTTPSConnection("graph.facebook.com")
+
+    # dashboard = "http://localhost:8000/dashboard"
 
     payload = {
         "messaging_product": "whatsapp",
