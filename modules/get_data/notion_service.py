@@ -24,13 +24,6 @@ NOTION_TASK_FILTER = {
     ]
 }
 
-data = notion.databases.query(
-    database_id=DATABASE_ID,
-    filter=NOTION_TASK_FILTER,
-    page_size=100
-)
-
-
 def _days_until(date_value: Any) -> Optional[int]:
     """
     Prend soit :
@@ -64,6 +57,12 @@ def _days_until(date_value: Any) -> Optional[int]:
 def fetch_tasks():
     tasks = []
 
+    data = notion.databases.query(
+        database_id=DATABASE_ID,
+        filter=NOTION_TASK_FILTER,
+        page_size=1000
+    )
+
     for row in data["results"]:
         # Titre : on sécurise s'il n'y a pas de bloc
         title_prop = row["properties"]["Nom"]["title"]
@@ -77,6 +76,10 @@ def fetch_tasks():
         domaine_prop = row["properties"]["Domaine"]["select"]
         domaine = domaine_prop["name"] if domaine_prop else ""
 
+        # Etat (tu avais une petite erreur ici : tu re-testais Priorité)
+        etat_prop = row["properties"]["État"]["status"]
+        etat = etat_prop["name"] if etat_prop else ""
+
         url = row["url"]
 
         # Échéance Notion : c'est un dict {"start": "...", "end": "..."} ou None
@@ -89,6 +92,7 @@ def fetch_tasks():
         tasks.append({
             "title": title,
             "prio": prio,
+            "etat": etat,
             "domaine": domaine,
             "due_date": due_date,
             "days_remaining": days_remaining,
