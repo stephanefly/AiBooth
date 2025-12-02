@@ -1,15 +1,12 @@
 import os
-import json
-import base64
 from pathlib import Path
-import requests
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from fastapi.templating import Jinja2Templates
 import json
 import http.client
 
-from modules.whatsapp.admin_whatsapp import days_until_expiration
+from app.modules.whatsapp.admin_whatsapp import days_until_expiration
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

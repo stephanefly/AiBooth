@@ -3,7 +3,6 @@ from typing import Optional, Any
 from datetime import date, timedelta
 
 from notion_client import Client as Notion
-from models import Task
 from dotenv import load_dotenv
 import os
 
