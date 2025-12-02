@@ -7,8 +7,8 @@ from typing import Any
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from app.modules.get_data.objectifs import criteria_to_prompt_block
-from app.modules.get_data.profile_service import profile_to_prompt_block
+from modules.get_data.objectifs import criteria_to_prompt_block
+from modules.get_data.profile_service import profile_to_prompt_block
 
 # Charge .env
 load_dotenv()

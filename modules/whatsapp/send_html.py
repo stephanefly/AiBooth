@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 import json
 import http.client
 
-from app.modules.whatsapp.admin_whatsapp import days_until_expiration
+from modules.whatsapp.admin_whatsapp import days_until_expiration
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")

@@ -4,7 +4,7 @@ from typing import Iterable, List
 
 import pandas as pd
 
-from app.models import Objective
+from models import Objective
 
 EXCEL_PATH = Path(__file__).resolve().parents[2] / "Objectifs_Strategiques_MySelfieBooth.xlsx"
 SHEET = "GLOBAL"

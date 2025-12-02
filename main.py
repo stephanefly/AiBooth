@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
@@ -7,18 +6,18 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
-from app.modules.get_data.event_queries import fetch_min_events
-from app.modules.get_data.db_crm import get_db
-from app.modules.get_data.notion_service import fetch_tasks
-from app.modules.get_data.objectifs import objectives_with_priority
-from app.modules.ai_work.ai_service import generate_next_action
-from app.modules.whatsapp.send_html import create_html, build_dashboard_context, send_whatsapp_text
+from modules.get_data.event_queries import fetch_min_events
+from modules.get_data.db_crm import get_db
+from modules.get_data.notion_service import fetch_tasks
+from modules.get_data.objectifs import objectives_with_priority
+from modules.ai_work.ai_service import generate_next_action
+from modules.whatsapp.send_html import create_html, build_dashboard_context, send_whatsapp_text
 
 app = FastAPI()
 
 # Static & templates
 BASE_DIR = Path(__file__).parent
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+app.mount("static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 @app.get("/")
